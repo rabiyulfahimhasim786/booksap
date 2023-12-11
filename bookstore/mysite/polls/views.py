@@ -9,8 +9,8 @@ from django.views.decorators.cache import cache_page
 def index(request):
     return HttpResponse("Hello, world!")
 from rest_framework import generics
-from .models import Book, Review
-from .serializers import BookSerializer, ReviewSerializer
+from .models import Book, Review, Author
+from .serializers import BookSerializer, ReviewSerializer, AuthorSerializer
 #paginations
 from rest_framework.pagination import PageNumberPagination
 
@@ -39,7 +39,7 @@ class BookUpdateView(generics.UpdateAPIView):
     serializer_class = BookSerializer
     lookup_field = 'id'
 
-    @transaction.atomic
+    # @transaction.atomic
     def update(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
@@ -51,6 +51,42 @@ class BookUpdateView(generics.UpdateAPIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.data)
+
+
+# class BookUpdateView(generics.RetrieveUpdateAPIView):
+#     queryset = Book.objects.filter(is_active=True)
+#     serializer_class = BookSerializer
+#     lookup_field = 'id'
+
+#     @transaction.atomic
+#     def update(self, request, *args, **kwargs):
+#         try:
+#             instance = self.get_object()
+
+#             # Extract author data from the request
+#             author_data = request.data.pop('author', None)
+
+#             # If author data is provided, check if the author exists
+#             if author_data:
+#                 author_id = author_data.get('id')
+#                 if author_id:
+#                     author_instance = Author.objects.get(pk=author_id)
+#                     author_serializer = AuthorSerializer(instance=author_instance, data=author_data)
+#                 else:
+#                     author_serializer = AuthorSerializer(data=author_data)
+
+#                 author_serializer.is_valid(raise_exception=True)
+#                 author = author_serializer.save()
+#                 instance.author = author
+
+#             serializer = self.get_serializer(instance, data=request.data, partial=True)
+#             serializer.is_valid(raise_exception=True)
+#             self.perform_update(serializer)
+#         except Exception as e:
+#             transaction.set_rollback(True)
+#             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+#         return Response(serializer.data)
     
 class BookListView(generics.ListAPIView):
     queryset = Book.objects.filter(is_active=True)
@@ -91,12 +127,34 @@ class BookSoftDeleteRestoreView(generics.RetrieveUpdateAPIView):
             instance.is_active = not instance.is_active
             instance.save()
             serializer = self.get_serializer(instance)
+            return Response(serializer.data)
         except Exception as e:
             transaction.set_rollback(True)
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.data)
+# class BookSoftDeleteRestoreView(generics.RetrieveUpdateAPIView):
+#     queryset = Book.objects.all()
+#     serializer_class = BookSerializer
+#     lookup_field = 'id'
 
+#     @transaction.atomic
+#     def update(self, request, *args, **kwargs):
+#         try:
+#             instance = self.get_object()
+#             # instance = self.get_object()
+            
+#             # Set the is_active field based on the request data
+#             is_active = request.data.get('is_active', not instance.is_active)
+#             request.data['is_active'] = is_active
+#             print(request.data['is_active'] )
+
+#             serializer = self.get_serializer(instance, data=request.data, partial=True)
+#             serializer.is_valid(raise_exception=True)
+#             serializer.save()
+#             return Response(serializer.data)
+#         except Exception as e:
+#             transaction.set_rollback(True)
+#             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class ReviewListCreateView(generics.ListCreateAPIView):
     queryset = Review.objects.all()
