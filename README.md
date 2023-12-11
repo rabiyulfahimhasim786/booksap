@@ -18,3 +18,6 @@
 
 # Postman Documentations
 * URL -  https://documenter.getpostman.com/view/19731451/2s9YkhgjA8#04a80930-96d8-46c2-b7b1-b7a2e30e38af
+* Click Run in postman.
+* Open it in your local system app or website.
+* Make sure before you run this django Books api applications.
