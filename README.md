@@ -1,7 +1,7 @@
 # booksapi
 
 # Installation
-* 1 - clone repo [[https://github.com/rabiyulfahimhasim786/booksapi](https://github.com/rabiyulfahimhasim786/booksapi.git)]
+* 1 - clone repo [https://github.com/rabiyulfahimhasim786/booksapi](https://github.com/rabiyulfahimhasim786/booksapi.git)
 * 2 - create a virtual environment and activate
 *  - pip install virtualenv
 *  - virtualenv envname
